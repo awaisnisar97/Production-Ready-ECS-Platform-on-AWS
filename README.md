@@ -132,7 +132,7 @@ Features implemented:
 - Local container testing before deployment
 
 
-## Docker Image Optimization
+## Docker Image Optimisation
 
 Docker image optimisation: The initial builder image was 1.66 GB. Using a multi stage build with an Nginx only runtime reduced the final production image to 92.15 MB, approximately a 94.6% reduction in image size.
 
