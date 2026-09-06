@@ -146,7 +146,7 @@ GET /health
   "status": "ok"
 }
 ```
-![Local app deployment health check](threat-app/docker-running.png)
+![Local app deployment health check](./threat-app/screenshots/docker-running.png)
 ---
 
 # Infrastructure as Code
@@ -214,18 +214,17 @@ The deployment pipeline automates:
 This provides traceability between a Git commit, Docker image and ECS deployment.
 
 
-
 # Terraform infrastructure deployment
 
-[Successful Terraform infrastructure deployment](threat-app/successful-build.png)
+![Successful Terraform infrastructure deployment](./threat-app/screenshots/successful-build.png)
 
 # Application health check 
 
-[Successful application health check](threat-app/build-health.png)
+![Successful application health check](./threat-app/screenshots/build-health.png)
 
 # Application accessible over https
 
-[Successful app deployment](threat-app/tm.awaiscloud.click.png)
+![Successful app deployment](./threat-app/screenshots/tm.awaiscloud.click.png)
 ---
 
 # Security Features
@@ -250,7 +249,7 @@ Trivy was integrated into the Docker CI pipeline to scan container images for HI
 
 The initial image scan failed because HIGH severity vulnerabilities were identified in outdated packages. The affected packages were subsequently updated and the image passed the vulnerability scan.
 
-[Trivy vulnerability scan failure](threat-app/trivy-fail.png)
+![Trivy vulnerability scan failure](./threat-app/screenshots/trivy-fail.png)
 
 ---
 
