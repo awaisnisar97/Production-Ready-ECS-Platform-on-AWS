@@ -1,4 +1,4 @@
-# Production Ready ECS Platform on AWS
+# 
 
 ## Overview
 
@@ -46,6 +46,9 @@ Architecture components:
 
 # Directory structure 
 
+## Directory Structure
+
+```
 ECS-Threat-Composer/
 │
 ├── .github/
@@ -57,8 +60,7 @@ ECS-Threat-Composer/
 │
 ├── threat-app/
 │   ├── Dockerfile
-│   ├── .dockerignore
-│  
+│   └── .dockerignore
 │
 ├── infrastructure/
 │   ├── bootstrap/
@@ -81,8 +83,9 @@ ECS-Threat-Composer/
 │   └── .terraform.lock.hcl
 │
 ├── .gitignore
-└── README.md
-├── Troubleshooting.md
+├── README.md
+└── Troubleshooting.md
+```
 
 
 # Technology Stack
@@ -96,8 +99,8 @@ Services used:
 - Amazon ECS Fargate
 - Amazon Elastic Container Registry (ECR)
 - Application Load Balancer
-- Amazon VPC, public and privtae subnets
-- NAT gateways and eip
+- Amazon VPC with public and private subnets
+- NAT gateways and elastic ip addresses
 - Route 53
 - AWS Certificate Manager (ACM)
 - Identity and Access Management (IAM)
@@ -164,7 +167,7 @@ Features implemented:
 - Route 53 DNS configuration
 - ACM certificate management
 
-Terraform state management:
+# Terraform state management:
 
 - Remote Terraform state stored securely in Amazon S3
 - S3 state locking using Terraform's native lockfile mechanism
@@ -173,6 +176,19 @@ Terraform state management:
 
 This provides a reliable and collaborative Infrastructure as Code workflow.
 
+# Terraform bootstrap 
+
+A separate Terraform bootstrap configuration creates resources required before the main infrastructure can be deployed.
+
+The bootstrap configuration manages:
+
+- Amazon S3 bucket for Terraform remote state
+- S3 versioning, encryption and state locking
+- Amazon ECR repository
+
+The main Terraform configuration then uses the existing ECR repository when creating the ECS infrastructure.
+
+This separates the lifecycle of the resources required to bootstrap Terraform from the main application infrastructure.
 
 ---
 
@@ -189,18 +205,27 @@ The deployment pipeline automates:
 - Terraform deployment
 - ECS application updates
 - Post deployment health checks
+- AWS authentication uses OpenID Connect (OIDC) instead of storing long lived AWS credentials.
 
-AWS authentication uses OpenID Connect (OIDC) instead of storing long lived AWS credentials.
+# Immutable image deployment 
 
-# Successful terraform pipeline
+- Docker images are tagged using the Git commit SHA rather than 'latest'. The same SHA is passed to Terraform so the ECS task definition references the exact image produced by the CI pipeline.
 
-![Successful Terraform infrastructure deployment](threat-app/successful-build.png)
+This provides traceability between a Git commit, Docker image and ECS deployment.
 
-![Successful application health check](threat-app/build-health.png)
 
-# Successful deployment of application 
 
-![Successful app deployment](threat-app/tm.awaiscloud.click.png)
+# Terraform infrastructure deployment
+
+[Successful Terraform infrastructure deployment](threat-app/successful-build.png)
+
+# Application health check 
+
+[Successful application health check](threat-app/build-health.png)
+
+# Application accessible over https
+
+[Successful app deployment](threat-app/tm.awaiscloud.click.png)
 ---
 
 # Security Features
@@ -221,9 +246,18 @@ Implemented security practices:
 
 # Container vulnerability found by Trivy 
 
-![Trivy vulnerability scan failure](threat-app/trivy-fail.png)
+Trivy was integrated into the Docker CI pipeline to scan container images for HIGH and CRITICAL vulnerabilities.
+
+The initial image scan failed because HIGH severity vulnerabilities were identified in outdated packages. The affected packages were subsequently updated and the image passed the vulnerability scan.
+
+[Trivy vulnerability scan failure](threat-app/trivy-fail.png)
 
 ---
+
+# Troubleshooting 
+
+[View Troubleshooting Guide](Troubleshooting.md)
+
 
 # Lessons Learned
 
@@ -237,19 +271,9 @@ This project provided practical experience with:
 - Understanding infrastructure dependencies and Terraform state boundaries
 - Troubleshooting AWS IAM, OIDC, ECR, ECS networking and health checks
 
-A key learning was understanding the transition from manual cloud configuration to repeatable Infrastructure as Code and automated deployment workflows.
+- A key learning was the value of building the infrastructure through ClickOps first and then recreating it using Terraform. This helped me understand the purpose of each AWS service, identify dependencies between resources, understand the deployment order, and troubleshoot issues more effectively when converting the architecture into Infrastructure as Code.
 
 ---
-
-# Common issues & Troubleshooting
-
-For MACOS 
-- After running `yarn global add serve`, the terminal may return `command not found: serve`.
-- This occurs because the Yarn global binary directory is not included in your PATH.
-- To fix this, check the Yarn global binary location: via 'yarn global bin', then add the yarn global bin directory to your PATH via 'echo 'export PATH="$PATH:$(yarn global bin)"' >> ~/.zshrc' 
-- Reload shell 'source ~/.zshrc' and run 'serve -s build'  
-
-
 
 # Future Improvements
 
