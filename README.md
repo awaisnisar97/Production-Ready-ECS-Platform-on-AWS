@@ -31,7 +31,7 @@ Architecture components:
 
 # Architecture diagram
 
-![Architecture diagram](./threat-app/screenshots/architecture.png)
+![Architecture diagram](./threat-app/screenshots/architecture-new.png)
 
 # Traffic flow
 
