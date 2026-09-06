@@ -2,14 +2,15 @@
 
 ## AWS S3 bucket creation dependency 
 
-- In order for my terraform state to be stored directly in the S3 bucket, it was required to exist before the creation of the state file. 
-- In order to rectify this I incorporated a bbotsrap module, where i declared and set up my S3 bucket and referenced the bucket created wihtin the root backend.tf. 
+- In order for my terraform state to be stored directly in a S3 backend, it was required to exist before terraform can initialise the backend and store the state remotely.
+- Initially this was creating a dependency because the S3 bucket itself was being managed as part of the terraform infrastructure. 
+- In order to rectify this I incorporated a bootstrap module, where I set up and deployed my S3 bucket first, which then could be referencedby the roo backend.tf configuration. 
 
 ## Terraform ECR dependency issue 
 
-- During my docker build pipeline it created the image and pushed to the ECR registry, however the ECR was yet to be created due to it being in a seprate terraform infrastructure build workflow. this ultimately meant the pipleine failed. 
-- In order to rectify this i used the boostrap module, this is where you set up resources that are required before your main infrastructure can be deployed. 
-- I did this by first referencing and building the ecr repositiory within the docker build pipeline then referencing the bootstrap module in the docker build by stating needs: bootstrap-ecr 
+- During the docker build pipeline, the image was created and pushed to the ECR registry. However the ECR had yet to be created due to it being provisioned as part of a seperate terraform workflow, this ultimately meant the pipleine failed. 
+- To resolve this, I incorporated the ECR repository into the boostrap module. ensuring that the repository was created before the application image pipeline attempted to push an image.
+- I first ceated the ECR respository within the docker image workflow and then added a dependency to the docker build job,ensuring the build and push process would only run after the ECR respository had successfully, using needs: bootstrap-ecr.
 
 
 # Github Actions --> AWS authentication failure 
